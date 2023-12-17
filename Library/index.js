@@ -50,6 +50,7 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [String!]!
     me: User
   }
 
@@ -85,7 +86,8 @@ const resolvers = {
     },
     allBooks: async (root, args) => {
       if (!args.author && !args.genre) {
-        return Book.find({});
+        const book = await Book.find({}).populate('author');
+        return book;
       }
       let promise;
       if (args.genre) {
@@ -105,6 +107,13 @@ const resolvers = {
     },
     allAuthors: async () => {
       return Author.find({});
+    },
+    allGenres: async () => {
+      const books = await Book.find({});
+      const genres = Array.from(
+        new Set(books.map((book) => book.genres).flat())
+      );
+      return genres;
     },
     me: async (root, args, context) => {
       return context.currentUser;
@@ -128,6 +137,7 @@ const resolvers = {
           },
         });
       }
+
       let author = await Author.findOne({ name: args.author });
       try {
         if (!author) {
@@ -230,7 +240,6 @@ startStandaloneServer(server, {
       );
 
       const currentUser = await User.findById(decodedToken.id);
-      console.log(decodedToken);
 
       return { currentUser };
     }

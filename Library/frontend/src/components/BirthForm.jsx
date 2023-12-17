@@ -51,6 +51,7 @@ const BirthForm = ({ authors }) => {
         <input
           type="number"
           value={born}
+          required
           onChange={({ target }) => setBorn(Number(target.value))}
         />
         <button type="submit">Update author</button>
