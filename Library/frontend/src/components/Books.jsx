@@ -7,6 +7,7 @@ const Books = (props) => {
   const booksResult = useQuery(ALL_BOOKS, {
     skip: !props.show,
     variables: {
+      author: null,
       genre: genreFilter === 'all genres' ? null : genreFilter,
     },
   });
